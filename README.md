@@ -2,7 +2,7 @@
 
 ---
 
-# Monitoring for Nginx Reverse Proxy in Docker with HTTPS, Prometheus, Grafana, and Nginx Exporter
+# Monitoring for Nginx Reverse Proxy in Docker with HTTPS, Prometheus and Grafana
 
 This project sets up an **Nginx reverse proxy** deployed in **Docker**, enables **HTTPS** for the proxy, and provides access to **Prometheus** and **Grafana** services on subdomains. It also includes the use of **Nginx Exporter** and **Node Exporter** (in a Docker container) to collect machine and proxy metrics and a **basic authentication** service for accessing Prometheus.
 
