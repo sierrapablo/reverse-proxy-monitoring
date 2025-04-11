@@ -21,6 +21,7 @@ The project includes the following components:
 - **Prometheus**: Used to collect and store metrics from the system and services.
 - **Grafana**: Provides a way to visualize the metrics collected by Prometheus.
 - **Nginx Exporter**: Collects metrics about the Nginx server itself.
+- **Node Exporter**: Collects system metrics.
 - **htpasswd**: Provides basic authentication to protect access to Prometheus.
 
 ## Configuration
