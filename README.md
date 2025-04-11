@@ -4,7 +4,7 @@
 
 # Monitoring for Nginx Reverse Proxy in Docker with HTTPS, Prometheus, Grafana, and Nginx Exporter
 
-This project sets up an **Nginx reverse proxy** deployed in **Docker**, enables **HTTPS** for the proxy, and provides access to **Prometheus** and **Grafana** services on subdomains. It also includes the use of **Nginx Exporter** (in a Docker container) to collect Nginx metrics and a **basic authentication** service for accessing Prometheus.
+This project sets up an **Nginx reverse proxy** deployed in **Docker**, enables **HTTPS** for the proxy, and provides access to **Prometheus** and **Grafana** services on subdomains. It also includes the use of **Nginx Exporter** and **Node Exporter** (in a Docker container) to collect machine and proxy metrics and a **basic authentication** service for accessing Prometheus.
 
 ## Requirements
 
@@ -88,6 +88,7 @@ This will start the following services:
 - **Prometheus**: Listening on port 9090 for metric collection.
 - **Grafana**: Listening on port 3000 for metric visualization.
 - **Nginx Exporter**: Collecting Nginx metrics and exposing them to Prometheus.
+- **Node Exporter**: Collecting system metrics and exposing them to Prometheus.
 
 ### 5. **Access the Services**
 
@@ -100,15 +101,20 @@ This will start the following services:
 
 Once you access Grafana, you can create dashboards to visualize the metrics collected by Prometheus. You can do this manually or import a pre-configured dashboard using the ID `12708`, which is a popular dashboard for monitoring system and application metrics for a nginx reverse proxy.
 
-- **To import the dashboard**:
+- **To import the dashboards**:
   1. Go to Grafana.
   2. In the left menu, select **Dashboards > Manage > Import**.
   3. Enter the ID `12708` in the Dashboard ID field.
   4. Click **Load** and then **Import**.
+  5. Repeat the process for ID `1860`
 
-This will load a pre-configured dashboard with various panels for monitoring common system metrics.
+This will load pre-configured dashboards with various panels for monitoring common system metrics and nginx proxy metrics.
 
-![example-dashboard](example.png)
+#### Nginx Exporter Dashboard
+![nginx-exporter-dashboard](example.png)
+
+### Node Exporter Dashboard
+![node-exporter-dashboard](example2.png)
 
 ### 7. **Add Custom Panels (Optional)**
 
@@ -121,7 +127,7 @@ If you want to further customize your dashboard, you can create additional panel
 
 ## Conclusion
 
-This project will allow you to set up a full monitoring system for your infrastructure using **Prometheus** and **Grafana**. It also provides an authentication layer via basic authentication for Prometheus, enables HTTPS for the services deployed through **Nginx**, and uses **nginx-exporter** to monitor Nginx itself.
+This project will allow you to set up a full monitoring system for your infrastructure using **Prometheus** and **Grafana**. It also provides an authentication layer via basic authentication for Prometheus, enables HTTPS for the services deployed through **Nginx**, and uses **nginx-exporter** to monitor Nginx itself and **node-exporter** to monitor system metrics.
 
 ## License
 
