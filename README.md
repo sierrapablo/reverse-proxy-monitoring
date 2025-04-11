@@ -108,6 +108,8 @@ Once you access Grafana, you can create dashboards to visualize the metrics coll
 
 This will load a pre-configured dashboard with various panels for monitoring common system metrics.
 
+[example-dashboard](example.png)
+
 ### 7. **Add Custom Panels (Optional)**
 
 If you want to further customize your dashboard, you can create additional panels using PromQL queries to retrieve specific metrics.
