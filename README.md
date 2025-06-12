@@ -4,7 +4,7 @@
 
 # Monitoring for Nginx Reverse Proxy in Docker with HTTPS, Prometheus and Grafana
 
-This project sets up an **Nginx reverse proxy** deployed in **Docker**, enables **HTTPS** for the proxy, and provides access to **Prometheus** and **Grafana** services on subdomains. It also includes the use of **Nginx Exporter** and **Node Exporter** (in a Docker container) to collect machine and proxy metrics and a **basic authentication** service for accessing Prometheus.
+This project sets up an **Nginx reverse proxy** deployed in **Docker**, enables **HTTPS** for the proxy, and provides access to **Prometheus** and **Grafana** services on subdomains. It also includes the use of **Nginx Exporter** and **Node Exporter** (in a Docker container) to collect machine and proxy metrics and a **basic authentication** service for accessing Prometheus, and a background script that continuously monitors Nginx configuration changes to perform automatic reloads (hot reload effect).
 
 ## Requirements
 
@@ -38,10 +38,10 @@ mkdir ssl
 
 ### 2. **Configure Environment Variables**
 
-The `.env.example` file contains the necessary environment variables for the configuration. Modify this file with the appropriate values and rename it to `.env`:
+The `.example.env` file contains the necessary environment variables for the configuration. Modify this file with the appropriate values and rename it to `.env`:
 
 ```bash
-cp .env.example .env
+cp .example.env .env
 ```
 
 Make sure to fill in the following fields in the `.env` file:
@@ -51,7 +51,7 @@ Make sure to fill in the following fields in the `.env` file:
 - `SSL_CERTIFICATE`: The path to the SSL certificate file.
 - `SSL_CERTIFICATE_KEY`: The path to the SSL certificate key file.
 - `GRAFANA_SECURITY_ADMIN_USER`: The username to access Grafana.
-- `GRAFANA_SECURITY_ADMIN_PASSWORD`: The password to access Grafana.
+- `GRAFANA_SECURITY_ADMIN_PASSWORD`: The password to access Grafana. This password needs to be changed on first logging in.
 
 ### 3. **Configure Basic Authentication for Prometheus**
 
@@ -90,11 +90,12 @@ This will start the following services:
 - **Grafana**: Listening on port 3000 for metric visualization.
 - **Nginx Exporter**: Collecting Nginx metrics and exposing them to Prometheus.
 - **Node Exporter**: Collecting system metrics and exposing them to Prometheus.
+- **Reload Script**:  A background script runs continuously to watch for changes in the Nginx configuration and automatically reload the service when updates are detected (hot reload effect).
 
 ### 5. **Access the Services**
 
-- **Prometheus**: [https://prometheus.yourdomain.com](https://prometheus.yourdomain.com) (requires basic authentication)
-- **Grafana**: [https://grafana.yourdomain.com](https://grafana.yourdomain.com)
+- **Prometheus**: **https://prometheus.yourdomain.com** (requires basic authentication)
+- **Grafana**: **https://grafana.yourdomain.com**
   - Username: The username configured in `GRAFANA_SECURITY_ADMIN_USER`.
   - Password: The password configured in `GRAFANA_SECURITY_ADMIN_PASSWORD`.
 
