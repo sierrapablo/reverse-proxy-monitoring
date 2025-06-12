@@ -1,13 +1,19 @@
 services:
   reverse-proxy:
-    build: .
+    build:
+      context: .
     container_name: nginx-proxy
     ports:
       - "80:80"
       - "443:443"
-    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./.htpasswd:/etc/nginx/.htpasswd:ro
+    restart: always
     networks:
-      - monitoring
+      - reverse-proxy
     depends_on:
       - prometheus
       - grafana
@@ -19,18 +25,18 @@ services:
       - '--nginx.scrape-uri=http://reverse-proxy:8080/nginx_status'
     ports:
       - "9113:9113"
-    restart: unless-stopped
+    restart: always
     depends_on:
       - reverse-proxy
     networks:
-      - monitoring
+      - reverse-proxy
 
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
-    restart: unless-stopped
+    restart: always
     networks:
-      - monitoring
+      - reverse-proxy
     pid: "host"
     volumes:
       - /proc:/host/proc:ro
@@ -49,7 +55,8 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     networks:
-      - monitoring
+      - reverse-proxy
+    restart: always
 
   grafana:
     image: grafana/grafana
@@ -60,14 +67,15 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
-
+    restart: always
     networks:
-      - monitoring
+      - reverse-proxy
 
 volumes:
   grafana_data:
 
 networks:
-  monitoring:
+  reverse-proxy:
+    name: reverse-proxy
     driver: bridge
 
