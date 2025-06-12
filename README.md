@@ -125,8 +125,7 @@ If you want to further customize your dashboard, you can create additional panel
 ## Advanced and Customization
 
 - **Alerts**: If you'd like to add alerts in Prometheus, you can configure alert rules in the Prometheus configuration file.
-- **Additional Services**: You can add more exporters to monitor other services or applications in your infrastructure. Make sure those services are connected to the same network as the reverse proxy, prometheus and grafana.
-
+- **Additional Services**: You can add more exporters to monitor other services or applications in your infrastructure. To have these services properly handled by the Nginx reverse proxy and detected by the hot reload script, you need to add their configuration files as separate `.conf` files in `./nginx/conf.d/` directory. Make sure those services are connected to the same network as the reverse proxy, Prometheus, and Grafana. 
 ## Conclusion
 
 This project will allow you to set up a full monitoring system for your infrastructure using **Prometheus** and **Grafana**. It also provides an authentication layer via basic authentication for Prometheus, enables HTTPS for the services deployed through **Nginx**, and uses **nginx-exporter** to monitor Nginx itself and **node-exporter** to monitor system metrics.
