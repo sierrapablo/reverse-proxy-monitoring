@@ -48,15 +48,6 @@ pipeline {
       }
         }
 
-        stage('Docker Compose Up') {
-      steps {
-        dir('.') {
-          sh 'docker compose up -d'
-        }
-      }
-        }
-    }
-
     post {
         success {
       echo 'Terraform y Docker desplegados correctamente ✅'
