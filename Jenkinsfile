@@ -13,6 +13,7 @@ pipeline {
     options {
         ansiColor('xterm')
         timestamps()
+        timeout(time: 45, unit: 'MINUTES')
     }
 
     stages {
@@ -42,9 +43,16 @@ pipeline {
         stage('Terraform Apply') {
       steps {
         dir('terraform') {
-          // Espera confirmación manual antes de aplicar
           input message: '¿Deseas aplicar los cambios de Terraform?', ok: 'Sí, aplicar'
           sh 'terraform apply -var-file=terraform.tfvars'
+        }
+      }
+        }
+
+        stage('Docker Compose Up') {
+      steps {
+        dir('.') {
+          sh 'docker compose up -d'
         }
       }
         }
@@ -52,7 +60,7 @@ pipeline {
 
     post {
         success {
-      echo 'Terraform desplegado correctamente ✅'
+      echo 'Terraform y Docker desplegados correctamente ✅'
         }
         failure {
       echo 'Ha fallado el pipeline ❌'
