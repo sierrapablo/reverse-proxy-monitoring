@@ -6,7 +6,7 @@ pipeline {
       steps {
         dir('/repos/devops-nginx/reverse-proxy-monitoring') {
           sh'''
-            git config --global --add safe.directory /repos/devops-nginx/reverse-proxy-monitoring
+            git config --global --add safe.directory .
             git fetch origin main && git reset --hard origin/main
           '''
         }
