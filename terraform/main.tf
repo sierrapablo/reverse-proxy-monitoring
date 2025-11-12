@@ -32,7 +32,7 @@ resource "docker_image" "reverse_proxy" {
 
 resource "docker_container" "reverse_proxy" {
   name    = "nginx-proxy"
-  image   = docker_image.reverse_proxy.id
+  image   = docker_image.reverse_proxy.image_id
   restart = "always"
 
   networks_advanced {
@@ -77,10 +77,10 @@ resource "docker_container" "reverse_proxy" {
     read_only      = true
   }
 
-  env = {
-    PROMETHEUS_HOST = var.prometheus_host
-    GRAFANA_HOST    = var.grafana_host
-  }
+  env = [
+    "PROMETHEUS_HOST=${var.prometheus_host}",
+    "GRAFANA_HOST=${var.grafana_host}"
+  ]
 
   depends_on = [
     docker_container.prometheus,
@@ -89,9 +89,13 @@ resource "docker_container" "reverse_proxy" {
 }
 
 # --- NGINX Exporter ---
+resource "docker_image" "nginx_exporter" {
+  name = "nginx/nginx-prometheus-exporter:latest"
+}
+
 resource "docker_container" "nginx_exporter" {
   name    = "nginx-exporter"
-  image   = "nginx/nginx-prometheus-exporter:latest"
+  image   = docker_image.nginx_exporter.image_id
   restart = "always"
 
   networks_advanced {
@@ -109,16 +113,22 @@ resource "docker_container" "nginx_exporter" {
 }
 
 # --- Node Exporter ---
+resource "docker_image" "node_exporter" {
+  name = "prom/node-exporter:latest"
+}
+
 resource "docker_container" "node_exporter" {
   name    = "node-exporter"
-  image   = "prom/node-exporter:latest"
+  image   = docker_image.node_exporter.image_id
   restart = "always"
 
   networks_advanced {
     name = docker_network.reverse_proxy.name
   }
 
-  pid = "host"
+  host_config {
+    pid_mode = "host"
+  }
 
   volumes {
     host_path      = "/proc"
@@ -146,9 +156,13 @@ resource "docker_container" "node_exporter" {
 }
 
 # --- Prometheus ---
+resource "docker_image" "prometheus" {
+  name = "prom/prometheus:latest"
+}
+
 resource "docker_container" "prometheus" {
   name    = "prometheus"
-  image   = "prom/prometheus:latest"
+  image   = docker_image.prometheus.image_id
   restart = "always"
 
   networks_advanced {
@@ -164,9 +178,13 @@ resource "docker_container" "prometheus" {
 }
 
 # --- Grafana ---
+resource "docker_image" "grafana" {
+  name = "grafana/grafana:latest"
+}
+
 resource "docker_container" "grafana" {
   name    = "grafana"
-  image   = "grafana/grafana:latest"
+  image   = docker_image.grafana.image_id
   restart = "always"
 
   networks_advanced {
@@ -183,8 +201,8 @@ resource "docker_container" "grafana" {
     container_path = "/etc/grafana/provisioning/"
   }
 
-  env = {
-    GF_SECURITY_ADMIN_USER     = var.grafana_user
-    GF_SECURITY_ADMIN_PASSWORD = var.grafana_password
-  }
+  env = [
+    "GF_SECURITY_ADMIN_USER=${var.grafana_user}",
+    "GF_SECURITY_ADMIN_PASSWORD=${var.grafana_password}"
+  ]
 }
