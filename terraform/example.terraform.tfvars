@@ -1,6 +1,0 @@
-ssl_certificate     = "/path/to/certificate.pem"
-ssl_certificate_key = "/path/to/certificate.key"
-prometheus_host     = "prometheus.yourdomain.xxx"
-grafana_host        = "grafana.yourdomain.xxx"
-grafana_user        = "yourusername"
-grafana_password    = "yourdefaultpassword"
