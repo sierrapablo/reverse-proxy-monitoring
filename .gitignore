@@ -1,10 +1,39 @@
+# --- Archivos de entorno ---
 .env
-ssl
+ssl/
 .htpasswd
-analytics.conf
-coachlabs.conf
-coach-hub.conf
-sierrapablo.conf
-portainer.conf
-portfolio-api.conf
-sp-blogposts-bucket.conf
+
+# --- Terraform ---
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate*
+terraform/terraform.tfvars
+terraform/crash.log
+
+# --- Jenkins ---
+jenkins_home/
+*.jenkinsfile_backup
+
+# --- Docker ---
+docker-compose.override.yml
+**/docker-compose.override.yml
+**/docker-compose.override.yaml
+**/docker-compose.override.yml.enc
+**/docker-compose.override.yaml.enc
+*.log
+*.tmp
+
+# --- Node / otros ---
+node_modules/
+dist/
+build/
+npm-debug.log*
+yarn-error.log*
+
+# --- IDEs / OS ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
