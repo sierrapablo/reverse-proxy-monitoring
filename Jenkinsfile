@@ -1,39 +1,22 @@
 pipeline {
-    agent any
+  agent any
 
-    stages {
-        stage('Terraform Init') {
+  stages {
+    stage('Docker Compose Down') {
       steps {
-        dir('terraform') {
-          sh 'terraform init'
-        }
+        dir('devops-nginx') { sh 'docker-compose down || true' }
       }
-        }
-
-        stage('Terraform Plan') {
-      steps {
-        dir('terraform') {
-          sh 'terraform plan -var-file=terraform.tfvars'
-        }
-      }
-        }
-
-        stage('Terraform Apply') {
-      steps {
-        dir('terraform') {
-          input message: '¿Deseas aplicar los cambios de Terraform?', ok: 'Sí, aplicar'
-          sh 'terraform apply -var-file=terraform.tfvars'
-        }
-      }
-        }
     }
 
-    post {
-        success {
-      echo 'Terraform y Docker desplegados correctamente ✅'
-        }
-        failure {
-      echo 'Ha fallado el pipeline ❌'
-        }
+    stage('Docker Compose Up') {
+      steps {
+        dir('devops-nginx') { sh 'docker-compose up -d --build' }
+      }
     }
+  }
+
+  post {
+    success { echo 'Docker desplegado correctamente ✅' }
+    failure { echo 'Ha fallado el pipeline ❌' }
+  }
 }
