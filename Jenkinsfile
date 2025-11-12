@@ -2,9 +2,17 @@ pipeline {
   agent any
 
   stages {
+    stage('Clone Repo') {
+      steps {
+        dir('/repos/devops-nginx/reverse-proxy-monitoring') {
+          sh 'git fetch origin main && git reset --hard origin/main'
+        }
+      }
+    }
+
     stage('Docker Compose Down') {
       steps {
-        dir('/repos/devops-nginx') {
+        dir('/repos/devops-nginx/reverse-proxy-monitoring') {
           sh 'docker compose down || true'
         }
       }
@@ -12,7 +20,7 @@ pipeline {
 
     stage('Docker Compose Up') {
       steps {
-        dir('/repos/devops-nginx') {
+        dir('/repos/devops-nginx/reverse-proxy-monitoring') {
           sh 'docker compose up -d --build'
         }
       }
@@ -25,7 +33,9 @@ pipeline {
     }
     failure {
       echo 'Ha fallado el pipeline ❌'
-      sh 'docker compose down'
+      dir('/repos/devops-nginx/reverse-proxy-monitoring') {
+        sh 'docker compose down'
+      }
     }
   }
 }
