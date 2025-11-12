@@ -32,7 +32,7 @@ resource "docker_image" "reverse_proxy" {
 
 resource "docker_container" "reverse_proxy" {
   name    = "nginx-proxy"
-  image   = docker_image.reverse_proxy.latest
+  image   = docker_image.reverse_proxy.id
   restart = "always"
 
   networks_advanced {
@@ -89,13 +89,9 @@ resource "docker_container" "reverse_proxy" {
 }
 
 # --- NGINX Exporter ---
-resource "docker_image" "nginx_exporter" {
-  name = "nginx/nginx-prometheus-exporter:latest"
-}
-
 resource "docker_container" "nginx_exporter" {
   name    = "nginx-exporter"
-  image   = docker_image.nginx_exporter.latest
+  image   = "nginx/nginx-prometheus-exporter:latest"
   restart = "always"
 
   networks_advanced {
@@ -113,13 +109,9 @@ resource "docker_container" "nginx_exporter" {
 }
 
 # --- Node Exporter ---
-resource "docker_image" "node_exporter" {
-  name = "prom/node-exporter:latest"
-}
-
 resource "docker_container" "node_exporter" {
   name    = "node-exporter"
-  image   = docker_image.node_exporter.latest
+  image   = "prom/node-exporter:latest"
   restart = "always"
 
   networks_advanced {
@@ -154,13 +146,9 @@ resource "docker_container" "node_exporter" {
 }
 
 # --- Prometheus ---
-resource "docker_image" "prometheus" {
-  name = "prom/prometheus:latest"
-}
-
 resource "docker_container" "prometheus" {
   name    = "prometheus"
-  image   = docker_image.prometheus.latest
+  image   = "prom/prometheus:latest"
   restart = "always"
 
   networks_advanced {
@@ -176,13 +164,9 @@ resource "docker_container" "prometheus" {
 }
 
 # --- Grafana ---
-resource "docker_image" "grafana" {
-  name = "grafana/grafana:latest"
-}
-
 resource "docker_container" "grafana" {
   name    = "grafana"
-  image   = docker_image.grafana.latest
+  image   = "grafana/grafana:latest"
   restart = "always"
 
   networks_advanced {
