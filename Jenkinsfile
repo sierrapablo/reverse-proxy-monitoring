@@ -4,19 +4,28 @@ pipeline {
   stages {
     stage('Docker Compose Down') {
       steps {
-        dir('devops-nginx') { sh 'docker compose down || true' }
+        dir('/repos/devops-nginx') {
+          sh 'docker compose down || true'
+        }
       }
     }
 
     stage('Docker Compose Up') {
       steps {
-        dir('devops-nginx') { sh 'docker compose up -d --build' }
+        dir('/repos/devops-nginx') {
+          sh 'docker compose up -d --build'
+        }
       }
     }
   }
 
   post {
-    success { echo 'Docker desplegado correctamente ✅' }
-    failure { echo 'Ha fallado el pipeline ❌' }
+    success {
+      echo 'Docker desplegado correctamente ✅'
+    }
+    failure {
+      echo 'Ha fallado el pipeline ❌'
+      sh 'docker compose down'
+    }
   }
 }
