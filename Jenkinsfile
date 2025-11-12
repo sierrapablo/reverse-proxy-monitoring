@@ -5,7 +5,10 @@ pipeline {
     stage('Clone Repo') {
       steps {
         dir('/repos/devops-nginx/reverse-proxy-monitoring') {
-          sh 'git fetch origin main && git reset --hard origin/main'
+          sh'''
+            git config --global --add safe.directory /repos/devops-nginx/reverse-proxy-monitoring
+            git fetch origin main && git reset --hard origin/main
+          '''
         }
       }
     }
