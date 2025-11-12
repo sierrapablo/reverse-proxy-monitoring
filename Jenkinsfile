@@ -10,11 +10,6 @@ pipeline {
         TF_VAR_grafana_password    = credentials('tf_grafana_password')
     }
 
-    options {
-        ansiColor('xterm')
-        timestamps()
-    }
-
     stages {
         stage('Terraform Init') {
       steps {
