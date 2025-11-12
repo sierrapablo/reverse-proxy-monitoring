@@ -4,13 +4,13 @@ pipeline {
   stages {
     stage('Docker Compose Down') {
       steps {
-        dir('devops-nginx') { sh 'docker-compose down || true' }
+        dir('devops-nginx') { sh 'docker compose down || true' }
       }
     }
 
     stage('Docker Compose Up') {
       steps {
-        dir('devops-nginx') { sh 'docker-compose up -d --build' }
+        dir('devops-nginx') { sh 'docker compose up -d --build' }
       }
     }
   }
