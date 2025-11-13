@@ -8,7 +8,7 @@ This project sets up an **Nginx reverse proxy** deployed in **Docker**, enables 
 
 ## Requirements
 
-- **Docker** and **Docker Compose** installed.
+- **Docker** and **Docker Compose** and **Terraform**(optional) installed.
 - **SSL certificates** to enable HTTPS. These certificates must be stored in the `ssl/` folder, which should be created beforehand.
 - Basic knowledge of **Prometheus**, **Grafana**, and **Nginx**.
 - A server with **apt** access to install `htpasswd` and create a password file for Nginx.
@@ -75,15 +75,41 @@ htpasswd -c .htpasswd <username>
 
 This will prompt you to enter a password for the specified username. **This file will be used by Nginx to authenticate users before they can access Prometheus.**
 
-### 4. **Start and Run the Services with Docker Compose**
+### 4. **Start and Run the Services**
+Once you've configured the environment variables and placed the SSL certificates, you can start the services via Docker Compose or Terraform.
 
-Once you've configured the environment variables and placed the SSL certificates, you can start the services using Docker Compose. Run the following command to bring up all the containers:
+#### 4.a **Using Docker Compose**
+Run the following command to bring up all the containers:
 
 ```bash
 docker-compose up -d --build
 ```
 
-This will start the following services:
+#### 4.b **Using Terraform**
+Navigate to terraform/ directory:
+
+```bash
+cd terraform
+```
+
+Create terraform.tfvars file:
+
+```bash
+cp .example.tfvars terraform.tfvars
+```
+
+Modify the example values to match your environment: this step is simmilar to
+[2. Configure Environment Variables](#2-configure-environment-variables)
+
+Then, run the following commands:
+
+```bash
+terraform init
+terraform plan
+terraform apply
+```
+
+Both methods will start the following services:
 
 - **Nginx**: Listening on port 443 with HTTPS enabled, serving Prometheus and Grafana on the configured subdomains.
 - **Prometheus**: Listening on port 9090 for metric collection.
@@ -91,6 +117,15 @@ This will start the following services:
 - **Nginx Exporter**: Collecting Nginx metrics and exposing them to Prometheus.
 - **Node Exporter**: Collecting system metrics and exposing them to Prometheus.
 - **Reload Script**:  A background script runs continuously to watch for changes in the Nginx configuration and automatically reload the service when updates are detected (hot reload effect).
+
+| Service        | Container Port | Host Port | URL                                                                    | Notes                      |
+| -------------- | -------------- | --------- | ---------------------------------------------------------------------- | -------------------------- |
+| Nginx Proxy    | 80 / 443       | 80 / 443  | [https://yourdomain.com](https://yourdomain.com)                       | Reverse proxy + HTTPS      |
+| Prometheus     | 9090           | 9090      | [https://prometheus.yourdomain.com](https://prometheus.yourdomain.com) | Requires Basic Auth        |
+| Grafana        | 3000           | 3000      | [https://grafana.yourdomain.com](https://grafana.yourdomain.com)       | Admin credentials required |
+| Nginx Exporter | 9113           | 9113      | [http://localhost:9113/metrics](http://localhost:9113/metrics)         | Exposes Nginx metrics      |
+| Node Exporter  | 9100           | 9100      | [http://localhost:9100/metrics](http://localhost:9100/metrics)         | Exposes system metrics     |
+
 
 ### 5. **Access the Services**
 
@@ -128,7 +163,7 @@ If you want to further customize your dashboard, you can create additional panel
 - **Additional Services**: You can add more exporters to monitor other services or applications in your infrastructure. To have these services properly handled by the Nginx reverse proxy and detected by the hot reload script, you need to add their configuration files as separate `.conf` files in `./nginx/conf.d/` directory. Make sure those services are connected to the same network as the reverse proxy, Prometheus, and Grafana. 
 ## Conclusion
 
-This project will allow you to set up a full monitoring system for your infrastructure using **Prometheus** and **Grafana**. It also provides an authentication layer via basic authentication for Prometheus, enables HTTPS for the services deployed through **Nginx**, and uses **nginx-exporter** to monitor Nginx itself and **node-exporter** to monitor system metrics.
+This project will allow you to set up a full monitoring system for your infrastructure using **Prometheus** and **Grafana**. It also provides an authentication layer via basic authentication for Prometheus, enables HTTPS for the services deployed through **Nginx**, and uses **nginx-exporter** to monitor Nginx itself and **node-exporter** to monitor system metrics. Also, this project allows you to replicate the configuration via IaC, using Terraform.
 
 ## License
 
