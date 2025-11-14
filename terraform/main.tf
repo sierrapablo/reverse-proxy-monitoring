@@ -13,8 +13,7 @@ resource "docker_volume" "grafana_data" {
 resource "docker_image" "reverse_proxy_image" {
   name = "nginx-reverse-proxy"
   build {
-    context    = abspath("${path.module}/..")
-    dockerfile = abspath("${path.module}/../Dockerfile")
+    context = abspath("${path.module}/..")
   }
 }
 
