@@ -13,8 +13,8 @@ resource "docker_volume" "grafana_data" {
 resource "docker_image" "reverse_proxy_image" {
   name = "nginx-reverse-proxy"
   build {
-    context    = path.module
-    dockerfile = "Dockerfile"
+    context    = abspath("${path.module}/..")
+    dockerfile = abspath("${path.module}/../Dockerfile")
   }
 }
 
@@ -54,20 +54,20 @@ resource "docker_container" "reverse_proxy" {
   }
 
   volumes {
-    host_path      = var.nginx_conf_path
+    host_path      = local.nginx_conf_abs
     container_path = "/etc/nginx/nginx.conf"
   }
   volumes {
-    host_path      = var.nginx_conf_d_path
+    host_path      = local.nginx_conf_d_abs
     container_path = "/etc/nginx/conf.d/"
   }
   volumes {
-    host_path      = var.ssl_path
+    host_path      = local.ssl_path_abs
     container_path = "/etc/nginx/ssl"
     read_only      = true
   }
   volumes {
-    host_path      = var.htpasswd_path
+    host_path      = local.htpasswd_abs
     container_path = "/etc/nginx/.htpasswd"
     read_only      = true
   }
@@ -133,7 +133,7 @@ resource "docker_container" "prometheus" {
   }
 
   volumes {
-    host_path      = var.prometheus_config_path
+    host_path      = local.prometheus_path_abs
     container_path = "/etc/prometheus/prometheus.yml"
   }
 
@@ -150,11 +150,11 @@ resource "docker_container" "grafana" {
   }
 
   volumes {
-    host_path      = docker_volume.grafana_data.name
+    volume_name    = docker_volume.grafana_data.name
     container_path = "/var/lib/grafana"
   }
   volumes {
-    host_path      = var.grafana_provisioning_path
+    host_path      = local.grafana_path_abs
     container_path = "/etc/grafana/provisioning/"
   }
 
