@@ -37,3 +37,10 @@ yarn-error.log*
 *.swo
 .DS_Store
 Thumbs.db
+
+# Ignorar todo dentro de nginx/conf.d
+nginx/conf.d/*
+
+# Exceptuar estos archivos concretos
+!nginx/conf.d/grafana.conf
+!nginx/conf.d/prometheus.conf
