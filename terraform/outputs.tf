@@ -27,33 +27,6 @@ output "nginx_exporter_ports" {
   }
 }
 
-# Exposed ports of the Grafana container
-output "grafana_ports" {
-  description = "Ports exposed by the Grafana container"
-  value = {
-    http = docker_container.grafana.ports[0].external
-  }
-}
-
-# Exposed ports of the Prometheus container
-output "prometheus_ports" {
-  description = "Ports exposed by the Prometheus container"
-  value = {
-    http = docker_container.prometheus.ports[0].external
-  }
-}
-
-# Access URLs dynamically using exposed ports
-output "grafana_url" {
-  description = "URL to access Grafana"
-  value       = "http://localhost:${docker_container.grafana.ports[0].external}"
-}
-
-output "prometheus_url" {
-  description = "URL to access Prometheus"
-  value       = "http://localhost:${docker_container.prometheus.ports[0].external}"
-}
-
 output "nginx_exporter_url" {
   description = "URL to access Nginx Exporter metrics"
   value       = "http://localhost:${docker_container.nginx_exporter.ports[0].external}/metrics"

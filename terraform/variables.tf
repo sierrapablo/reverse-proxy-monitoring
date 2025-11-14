@@ -14,35 +14,35 @@ variable "grafana_admin_password" {
 variable "nginx_conf_path" {
   description = "Local path to nginx.conf"
   type        = string
-  default     = "${path.module}/nginx/nginx.conf"
+  default     = "../nginx/nginx.conf"
 }
 
 variable "nginx_conf_d_path" {
   description = "Local path to nginx conf.d directory"
   type        = string
-  default     = "${path.module}/nginx/conf.d/"
+  default     = "../nginx/conf.d/"
 }
 
 variable "ssl_path" {
   description = "Local path to SSL certificates"
   type        = string
-  default     = "${path.module}/ssl"
+  default     = "../ssl"
 }
 
 variable "htpasswd_path" {
   description = "Local path to .htpasswd"
   type        = string
-  default     = "${path.module}/.htpasswd"
+  default     = "../.htpasswd"
 }
 
 variable "grafana_provisioning_path" {
   description = "Local path to Grafana provisioning directory"
   type        = string
-  default     = "${path.module}/grafana/provisioning/"
+  default     = "../grafana/provisioning/"
 }
 
 variable "prometheus_config_path" {
   description = "Local path to Prometheus config file"
   type        = string
-  default     = "${path.module}/prometheus/prometheus.yml"
+  default     = "../prometheus/prometheus.yml"
 }
