@@ -23,3 +23,9 @@ resource "docker_container" "prometheus" {
 
   command = ["--config.file=/etc/prometheus/prometheus.yml"]
 }
+
+variable "prometheus_config_path" {
+  description = "Local path to Prometheus config file"
+  type        = string
+  default     = "../prometheus/prometheus.yml"
+}

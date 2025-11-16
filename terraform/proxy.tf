@@ -42,3 +42,15 @@ resource "docker_container" "reverse_proxy" {
     read_only      = true
   }
 }
+
+variable "nginx_conf_path" {
+  description = "Local path to nginx.conf"
+  type        = string
+  default     = "../nginx/nginx.conf"
+}
+
+variable "nginx_conf_d_path" {
+  description = "Local path to nginx conf.d directory"
+  type        = string
+  default     = "../nginx/conf.d/"
+}
