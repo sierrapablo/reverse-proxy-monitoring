@@ -8,7 +8,7 @@ This project sets up an **Nginx reverse proxy** deployed in **Docker**, enables 
 
 ## Requirements
 
-- **Docker** and **Docker Compose** and **Terraform**(optional) installed.
+- **Terraform** installed.
 - **SSL certificates** to enable HTTPS. These certificates must be stored in the `ssl/` folder, which should be created beforehand.
 - Basic knowledge of **Prometheus**, **Grafana**, and **Nginx**.
 - A server with **apt** access to install `htpasswd` and create a password file for Nginx.
@@ -28,89 +28,76 @@ The project includes the following components:
 
 ### 1. **Prepare the Environment**
 
-- Create the `ssl/` folder in the root directory of the project to store the SSL certificates (e.g., `fullchain.pem` and `server.key`).
+- Clone the repository.
+```bash
+git clone https://github.com/sierrapablo/reverse-proxy-monitoring.git
+cd reverse-proxy-monitoring
+```
 
+- Create the `ssl/` folder in the root directory of the project to store the SSL certificates and place them in this folder. The name of the files must be `fullchain.pem` for the certificate and `server.key` for the private key.
 ```bash
 mkdir ssl
+cp your/path/to/fullchain.pem ssl/fullchain.pem
+cp your/path/to/server.key ssl/server.key
 ```
 
-- Place your SSL certificate files in this folder.
+- Navigate to `nginx/conf.d/` and modify `grafana.conf` and `prometheus.conf` to match your domain. Here's an example:
+```conf
+server {
+    listen 443 ssl;
+    server_name grafana.yourdomain.xxx; # change this line
 
-### 2. **Configure Environment Variables**
+    location / {
+        proxy_pass http://grafana:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
 
-The `.example.env` file contains the necessary environment variables for the configuration. Modify this file with the appropriate values and rename it to `.env`:
-
-```bash
-cp .example.env .env
+server {
+    listen 80;
+    server_name grafana.yourdomain.xxx; # and this line
+    return 301 https://$host$request_uri;
+}
 ```
 
-Make sure to fill in the following fields in the `.env` file:
-
-- `GRAFANA_HOST`: The domain for Grafana (e.g., `grafana.yourdomain.com`).
-- `PROMETHEUS_HOST`: The domain for Prometheus (e.g., `prometheus.yourdomain.com`).
-- `SSL_CERTIFICATE`: The path to the SSL certificate file.
-- `SSL_CERTIFICATE_KEY`: The path to the SSL certificate key file.
-- `GRAFANA_SECURITY_ADMIN_USER`: The username to access Grafana.
-- `GRAFANA_SECURITY_ADMIN_PASSWORD`: The password to access Grafana. This password needs to be changed on first logging in.
-
-### 3. **Configure Basic Authentication for Prometheus**
-
+### 2. **Configure Basic Authentication for Prometheus**
 Access to Prometheus will be protected via basic authentication. **htpasswd** is used to create a password file for restricting access.
 
-#### 3.1 **Install htpasswd**
-
+#### 2.1 **Install htpasswd**
 If **htpasswd** is not installed, you can install it on your server with **apt**. On a Debian/Ubuntu-based distribution, use the following command:
-
 ```bash
 sudo apt install apache2-utils
 ```
 
-#### 3.2 **Create the `.htpasswd` File**
-
+#### 2.2 **Create the `.htpasswd` File**
 In the root directory of your project, create an `.htpasswd` file that contains the credentials for accessing Prometheus. You can generate it with the following command:
-
 ```bash
-htpasswd -c .htpasswd <username>
+htpasswd -c .htpasswd <your-username>
 ```
 
 This will prompt you to enter a password for the specified username. **This file will be used by Nginx to authenticate users before they can access Prometheus.**
 
-### 4. **Start and Run the Services**
-Once you've configured the environment variables and placed the SSL certificates, you can start the services via Docker Compose or Terraform.
+### 3. **Start and Run the Services**
+Once you've configured the environment variables and placed the SSL certificates, you can start the services via Terraform.
 
-#### 4.a **Using Docker Compose**
-Run the following command to bring up all the containers:
-
-```bash
-docker-compose up -d --build
-```
-
-#### 4.b **Using Terraform**
 Navigate to terraform/ directory:
 
 ```bash
 cd terraform
 ```
 
-Create terraform.tfvars file:
-
-```bash
-cp .example.tfvars terraform.tfvars
-```
-
-Modify the example values to match your environment: this step is simmilar to
-[2. Configure Environment Variables](#2-configure-environment-variables)
-
 Then, run the following commands:
-
 ```bash
 terraform init
 terraform plan
 terraform apply
 ```
+When applying, you need to confirm typing `yes` in the console when required.
 
-Both methods will start the following services:
-
+This will start the following services:
 - **Nginx**: Listening on port 443 with HTTPS enabled, serving Prometheus and Grafana on the configured subdomains.
 - **Prometheus**: Listening on port 9090 for metric collection.
 - **Grafana**: Listening on port 3000 for metric visualization.
@@ -120,25 +107,24 @@ Both methods will start the following services:
 
 | Service        | Container Port | Host Port | URL                                                                    | Notes                      |
 | -------------- | -------------- | --------- | ---------------------------------------------------------------------- | -------------------------- |
-| Nginx Proxy    | 80 / 443       | 80 / 443  | [https://yourdomain.com](https://yourdomain.com)                       | Reverse proxy + HTTPS      |
-| Prometheus     | 9090           | 9090      | [https://prometheus.yourdomain.com](https://prometheus.yourdomain.com) | Requires Basic Auth        |
-| Grafana        | 3000           | 3000      | [https://grafana.yourdomain.com](https://grafana.yourdomain.com)       | Admin credentials required |
+| Nginx Proxy    | 80 / 443       | 80 / 443  | [https://yourdomain.xxx](https://yourdomain.xxx)                       | Reverse proxy + HTTPS      |
+| Prometheus     | 9090           | 9090      | [https://prometheus.yourdomain.xxx](https://prometheus.yourdomain.xxx) | Requires Basic Auth        |
+| Grafana        | 3000           | 3000      | [https://grafana.yourdomain.xxx](https://grafana.yourdomain.xxx)       | Admin credentials required |
 | Nginx Exporter | 9113           | 9113      | [http://localhost:9113/metrics](http://localhost:9113/metrics)         | Exposes Nginx metrics      |
 | Node Exporter  | 9100           | 9100      | [http://localhost:9100/metrics](http://localhost:9100/metrics)         | Exposes system metrics     |
 
 
-### 5. **Access the Services**
+### 4. **Access the Services**
+- **Prometheus**: **https://prometheus.yourdomain.xxx** (requires basic authentication)
+- **Grafana**: **https://grafana.yourdomain.xxx**
+  - Username: The default username configured is `admin`.
+  - Password: The default password configured is `changeme`.
+  **Note:** *Change these credentials inside Grafana immediately after first logging in.*
 
-- **Prometheus**: **https://prometheus.yourdomain.com** (requires basic authentication)
-- **Grafana**: **https://grafana.yourdomain.com**
-  - Username: The username configured in `GRAFANA_SECURITY_ADMIN_USER`.
-  - Password: The password configured in `GRAFANA_SECURITY_ADMIN_PASSWORD`.
-
-### 6. **Configure Grafana**
-
+### 5. **Configure Grafana**
 Once you access Grafana, you can create dashboards to visualize the metrics collected by Prometheus. You can do this manually or import a pre-configured dashboard using the ID `12708`, which is a popular dashboard for monitoring system and application metrics for a nginx reverse proxy.
 
-- **To import the dashboards**:
+**To import the dashboards**:
   1. Go to Grafana.
   2. In the left menu, select **Dashboards > Manage > Import**.
   3. Enter the ID `12708` in the Dashboard ID field.
@@ -153,18 +139,15 @@ This will load pre-configured dashboards with various panels for monitoring comm
 ### Node Exporter Dashboard
 ![node-exporter-dashboard](example2.png)
 
-### 7. **Add Custom Panels (Optional)**
-
+### 6. **Add Custom Panels (Optional)**
 If you want to further customize your dashboard, you can create additional panels using PromQL queries to retrieve specific metrics.
 
 ## Advanced and Customization
-
 - **Alerts**: If you'd like to add alerts in Prometheus, you can configure alert rules in the Prometheus configuration file.
-- **Additional Services**: You can add more exporters to monitor other services or applications in your infrastructure. To have these services properly handled by the Nginx reverse proxy and detected by the hot reload script, you need to add their configuration files as separate `.conf` files in `./nginx/conf.d/` directory. Make sure those services are connected to the same network as the reverse proxy, Prometheus, and Grafana. 
-## Conclusion
+- **Additional Services**: You can add more exporters to monitor other services or applications in your infrastructure. To have these services properly handled by the Nginx reverse proxy and detected by the hot reload script, you need to add their configuration files as separate `.conf` files in `./nginx/conf.d/` directory. Make sure those services are connected to the same network as the reverse proxy, Prometheus, and Grafana.
 
+## Conclusion
 This project will allow you to set up a full monitoring system for your infrastructure using **Prometheus** and **Grafana**. It also provides an authentication layer via basic authentication for Prometheus, enables HTTPS for the services deployed through **Nginx**, and uses **nginx-exporter** to monitor Nginx itself and **node-exporter** to monitor system metrics. Also, this project allows you to replicate the configuration via IaC, using Terraform.
 
 ## License
-
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more details.
