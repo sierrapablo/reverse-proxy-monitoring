@@ -33,3 +33,11 @@ resource "docker_container" "node_exporter" {
     "--path.rootfs=/rootfs"
   ]
 }
+
+output "node_exporter_info" {
+  description = "Information about the Node Exporter container"
+  value = {
+    name  = docker_container.node_exporter.name
+    ports = docker_container.node_exporter.ports
+  }
+}

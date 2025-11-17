@@ -59,3 +59,16 @@ locals {
   nginx_conf_abs   = abspath("${path.module}/${var.nginx_conf_path}")
   nginx_conf_d_abs = abspath("${path.module}/${var.nginx_conf_d_path}")
 }
+
+output "reverse_proxy_ip" {
+  description = "Internal IP address of the nginx-proxy container in the reverse-proxy network"
+  value       = docker_container.reverse_proxy.network_data[0].ip_address
+}
+
+output "reverse_proxy_ports" {
+  description = "Ports exposed by the nginx-proxy container"
+  value = {
+    http  = docker_container.reverse_proxy.ports[0].external
+    https = docker_container.reverse_proxy.ports[1].external
+  }
+}

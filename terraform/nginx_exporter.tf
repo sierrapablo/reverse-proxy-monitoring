@@ -19,3 +19,15 @@ resource "docker_container" "nginx_exporter" {
 
   depends_on = [docker_container.reverse_proxy]
 }
+
+output "nginx_exporter_ports" {
+  description = "Ports exposed by the nginx-exporter container"
+  value = {
+    metrics = docker_container.nginx_exporter.ports[0].external
+  }
+}
+
+output "nginx_exporter_url" {
+  description = "URL to access Nginx Exporter metrics"
+  value       = "http://localhost:${docker_container.nginx_exporter.ports[0].external}/metrics"
+}
