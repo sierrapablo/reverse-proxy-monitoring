@@ -54,3 +54,8 @@ variable "nginx_conf_d_path" {
   type        = string
   default     = "../nginx/conf.d/"
 }
+
+locals {
+  nginx_conf_abs   = abspath("${path.module}/${var.nginx_conf_path}")
+  nginx_conf_d_abs = abspath("${path.module}/${var.nginx_conf_d_path}")
+}

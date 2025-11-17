@@ -53,3 +53,7 @@ variable "grafana_provisioning_path" {
   type        = string
   default     = "../grafana/provisioning/"
 }
+
+locals {
+  grafana_path_abs = abspath("${path.module}/${var.grafana_provisioning_path}")
+}

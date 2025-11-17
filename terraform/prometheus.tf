@@ -29,3 +29,7 @@ variable "prometheus_config_path" {
   type        = string
   default     = "../prometheus/prometheus.yml"
 }
+
+locals {
+  prometheus_path_abs = abspath("${path.module}/${var.prometheus_config_path}")
+}
